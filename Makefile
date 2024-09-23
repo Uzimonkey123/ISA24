@@ -3,7 +3,7 @@ CXXFLAGS = -std=gnu++20 -Wall -Wextra -Werror -pedantic -g
 
 TARGET = isa-top
 
-SRCS = parser.cpp main.cpp
+SRCS = Exception.cpp parser.cpp main.cpp
 HEADERS = $(SRCS:.cpp=.hpp)
 OBJS = $(SRCS:.cpp=.o)
 

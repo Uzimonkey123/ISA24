@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "Exception.hpp"
 
 #include <iostream>
 #include <getopt.h>
@@ -25,8 +26,7 @@ void Parser::parse(int argc, char* argv[]) {
         switch(option) {
             case 'i':
                 if(optarg == nullptr || optarg[0] == '-') {
-                    std::cerr << "Invalid argument for -i" << std::endl;
-                    exit(1);
+                    throw Exception(1, "Invalid argument for -i");
                 }
 
                 interface = optarg;
@@ -38,8 +38,7 @@ void Parser::parse(int argc, char* argv[]) {
                 } else if(strcmp(optarg, "p") == 0) {
                     orderBy = 'p';
                 } else {
-                    std::cerr << "Invalid argument for -s" << std::endl;
-                    exit(1);
+                    throw Exception(1, "Invalid argument for -s");
                 }
                 break;
 
@@ -48,14 +47,12 @@ void Parser::parse(int argc, char* argv[]) {
                 break;
 
             default:
-                std::cerr << "Invalid argument" << std::endl;
-                exit(1);
+                throw Exception(1, "Invalid argument");
         }
     }
 
     if(interface == "") {
-        std::cerr << "Interface is required" << std::endl;
-        exit(1);
+        throw Exception(1, "Interface is required");
     }
 }
 
