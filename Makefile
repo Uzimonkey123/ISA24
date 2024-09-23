@@ -3,8 +3,8 @@ CXXFLAGS = -std=gnu++20 -Wall -Wextra -Werror -pedantic -g
 
 TARGET = isa-top
 
-SRCS = $(wildcard *.cpp)
-HEADERS = $(wildcard *.h)
+SRCS = parser.cpp main.cpp
+HEADERS = $(SRCS:.cpp=.hpp)
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
