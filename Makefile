@@ -1,10 +1,10 @@
 CXX = g++
 CXXFLAGS = -std=gnu++17 -Wall -Wextra -Werror -pedantic -g
-LDFLAGS = -lpcap
+LDFLAGS = -lpcap -lncurses
 
 TARGET = isa-top
 
-SRCS = Packet.cpp Exception.cpp parser.cpp main.cpp
+SRCS = ConnectionManager.cpp Packet.cpp Exception.cpp parser.cpp main.cpp
 HEADERS = $(SRCS:.cpp=.hpp)
 OBJS = $(SRCS:.cpp=.o)
 
