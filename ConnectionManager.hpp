@@ -24,7 +24,7 @@ struct Connection {
     uint64_t rx_packets = 0;
     uint64_t tx_packets = 0;
     chrono::steady_clock::time_point last_update;
-    mutable Bandwidth bw;
+    mutable Bandwidth bw = Bandwidth();
 };
 
 class ConnectionManager {

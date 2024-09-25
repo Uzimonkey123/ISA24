@@ -5,7 +5,6 @@
 
 #include <pcap.h>
 #include <iostream>
-#include <vector>
 #include <thread>
 #include <mutex>
 #include <signal.h>
