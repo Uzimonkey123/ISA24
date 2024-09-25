@@ -5,25 +5,18 @@
 
 #include <pcap.h>
 #include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <cstring>
-#include <ctime>
 #include <vector>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip6.h>
-#include <arpa/inet.h>
-#include <net/ethernet.h>
-#include <netinet/tcp.h>
-#include <netinet/udp.h>
+#include <thread>
+#include <mutex>
 #include <signal.h>
 #include <unistd.h>
 
 pcap_t* global_pcap_handle = nullptr;
 ConnectionManager* connManagerPtr = nullptr;
 int interval = 1;
+bool sort_by_bytes = true;
 
+// Signal handler to cleanly exit on Ctrl+C
 void signalHandler(int signum) {
     (void) signum;
 
@@ -37,19 +30,35 @@ void signalHandler(int signum) {
     exit(0);
 }
 
+// Display refresh function called periodically by alarm
 void refreshDisplay(int signum) {
     (void) signum;
 
     if (connManagerPtr != nullptr) {
-        connManagerPtr->displayConnections();
+        connManagerPtr->displayConnections(sort_by_bytes);  // Refresh the screen with ncurses
     }
 
-    alarm(interval);
+    alarm(interval);  // Set the next alarm to refresh the display
+}
+
+void packetCapture(ConnectionManager* connManager, const std::string& interface) {
+    char errbuf[PCAP_ERRBUF_SIZE];
+
+    global_pcap_handle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
+    if (global_pcap_handle == nullptr) {
+        throw Exception(2, "pcap_open_live() failed: " + std::string(errbuf));
+    }
+
+
+    pcap_loop(global_pcap_handle, 0, Packet::handlePacket, reinterpret_cast<u_char*>(connManager));
+    if (global_pcap_handle != nullptr) {
+        pcap_close(global_pcap_handle);
+        global_pcap_handle = nullptr;
+    }
 }
 
 int main(int argc, char* argv[]) {
     Parser ArgParse = Parser();
-    char errbuf[PCAP_ERRBUF_SIZE];
 
     try {
         ArgParse.parse(argc, argv);
@@ -58,12 +67,8 @@ int main(int argc, char* argv[]) {
         return e.getCode();
     }
 
-    // Debug output
-    std::cout << "Interface: " << ArgParse.getInterface() << std::endl;
-    std::cout << "Order by: " << ArgParse.getOrderBy() << std::endl;
-    std::cout << "Interval: " << ArgParse.getInterval() << std::endl;
-
     interval = ArgParse.getInterval();
+    sort_by_bytes = ArgParse.getOrderBy() == 'b';
 
     ConnectionManager connManager = ConnectionManager();
     connManagerPtr = &connManager;
@@ -71,17 +76,12 @@ int main(int argc, char* argv[]) {
     signal(SIGINT, signalHandler);  // Handle Ctrl+C
     signal(SIGALRM, refreshDisplay);  // Handle screen refresh
 
-    // Open the network interface for packet capture
-    global_pcap_handle = pcap_open_live(ArgParse.getInterface().c_str(), BUFSIZ, 1, 1000, errbuf);
-    if (global_pcap_handle == nullptr) {
-        throw Exception(2, "pcap_open_live() failed: " + std::string(errbuf));
-    }
-
     // Alarm for first refresh screen
     alarm(1);
 
-    pcap_loop(global_pcap_handle, 0, Packet::handlePacket, reinterpret_cast<u_char*>(&connManager));
+    // Start packet capture in a separate thread
+    std::thread captureThread(packetCapture, &connManager, ArgParse.getInterface());
 
-    pcap_close(global_pcap_handle);
+    captureThread.join();
     return 0;
 }
