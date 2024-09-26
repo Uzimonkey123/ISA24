@@ -2,6 +2,7 @@
 #define CONNECTION_MANAGER_HPP
 
 #include "Bandwidth.hpp"
+#include "Connection.hpp"
 
 #include <string>
 #include <map>
@@ -12,46 +13,31 @@
 
 using namespace std;
 
-// Structure to store connection statistics
-struct Connection {
-    string src_ip;
-    string dst_ip;
-    int src_port;
-    int dst_port;
-    string protocol;
-    uint64_t rx_bytes = 0;
-    uint64_t tx_bytes = 0;
-    uint64_t rx_packets = 0;
-    uint64_t tx_packets = 0;
-    chrono::steady_clock::time_point last_update;
-    mutable Bandwidth bw = Bandwidth();
-};
-
 class ConnectionManager {
-private:
-    struct SavedConnection {
-        Connection conn;
-        double rx_bps;
-        double tx_bps;
-        double rx_pps;
-        double tx_pps;
-    };
+    private:
+        struct SavedConnection {
+            Connection conn;
+            double rx_bps = 0;
+            double tx_bps = 0;
+            double rx_pps = 0;
+            double tx_pps = 0;
 
-    mutex conn_mutex;
-    map<string, Connection> connections;
+            SavedConnection(const Connection& c) : conn(c) {}
+        };
 
-public:
-    ConnectionManager();
+        mutex conn_mutex;
+        std::map<std::string, Connection> connections;
 
-    void updateConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, bool is_rx);
+    public:
+        ConnectionManager();
 
-    void updateConnectionDetails(Connection& conn, const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol);
+        void updateConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, bool is_rx);
 
-    void updateTraffic(Connection& conn, int packet_size, bool is_rx);
+        void updateConnectionDetails(Connection& conn, const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol);
 
-    vector<SavedConnection> getActiveConnections(bool sort_by_bytes);
+        vector<SavedConnection> getActiveConnections(bool sort_by_bytes);
 
-    void displayConnections(bool sort_by_bytes);
+        void displayConnections(bool sort_by_bytes);
 };
 
 #endif

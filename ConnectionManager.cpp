@@ -15,17 +15,18 @@ ConnectionManager::ConnectionManager() {
     mousemask(0, NULL);
 }
 
-void ConnectionManager::updateConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, bool is_rx) {
-    lock_guard<mutex> lock(conn_mutex);
+void ConnectionManager::updateConnection(const std::string& src_ip, int src_port, const std::string& dst_ip, int dst_port, const std::string& protocol, int packet_size, bool is_rx) {
+    std::lock_guard<std::mutex> lock(conn_mutex);
 
     KeyGenerator keyGen;
-    string key = keyGen.generateKey(src_ip, src_port, dst_ip, dst_port, protocol);
-    Connection& conn = connections[key];
+    std::string key = keyGen.generateKey(src_ip, src_port, dst_ip, dst_port, protocol);
 
-    updateConnectionDetails(conn, src_ip, src_port, dst_ip, dst_port, protocol);
-    updateTraffic(conn, packet_size, is_rx);
+    // Check if connection exists or create a new one
+    if (connections.find(key) == connections.end()) {
+        connections[key] = Connection(src_ip, src_port, dst_ip, dst_port, protocol);
+    }
 
-    conn.last_update = chrono::steady_clock::now();
+    connections[key].updateTraffic(packet_size, is_rx);
 }
 
 void ConnectionManager::updateConnectionDetails(Connection& conn, const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol) {
@@ -36,24 +37,12 @@ void ConnectionManager::updateConnectionDetails(Connection& conn, const string& 
     conn.protocol = protocol;
 }
 
-void ConnectionManager::updateTraffic(Connection& conn, int packet_size, bool is_rx) {
-    if (is_rx) {
-        conn.rx_bytes += packet_size;
-        conn.rx_packets++;
-
-    } else {
-        conn.tx_bytes += packet_size;
-        conn.tx_packets++;
-
-    }
-}
-
 vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnections(bool sort_by_bytes) {
     vector<SavedConnection> conn_list;
 
     for (auto& it : connections) {
         Connection& conn = it.second;
-        SavedConnection sc;
+        SavedConnection sc(conn);
         sc.conn = conn;
 
         // Calculate bandwidth and packet rate
