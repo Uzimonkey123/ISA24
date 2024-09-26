@@ -29,14 +29,6 @@ void ConnectionManager::updateConnection(const std::string& src_ip, int src_port
     connections[key].updateTraffic(packet_size, is_rx);
 }
 
-void ConnectionManager::updateConnectionDetails(Connection& conn, const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol) {
-    conn.src_ip = src_ip;
-    conn.dst_ip = dst_ip;
-    conn.src_port = src_port;
-    conn.dst_port = dst_port;
-    conn.protocol = protocol;
-}
-
 vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnections(bool sort_by_bytes) {
     vector<SavedConnection> conn_list;
 

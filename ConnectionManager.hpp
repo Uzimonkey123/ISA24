@@ -33,8 +33,6 @@ class ConnectionManager {
 
         void updateConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, bool is_rx);
 
-        void updateConnectionDetails(Connection& conn, const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol);
-
         vector<SavedConnection> getActiveConnections(bool sort_by_bytes);
 
         void displayConnections(bool sort_by_bytes);
