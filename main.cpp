@@ -42,14 +42,30 @@ void refreshDisplay(int signum) {
 
 void packetCapture(ConnectionManager* connManager, const std::string& interface) {
     char errbuf[PCAP_ERRBUF_SIZE];
+    struct bpf_program filter;
 
+    // Open the device for capturing
     global_pcap_handle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
     if (global_pcap_handle == nullptr) {
         throw Exception(2, "pcap_open_live() failed: " + std::string(errbuf));
     }
 
+    pcap_set_buffer_size(global_pcap_handle, 2 * 1024 * 1024);
 
+    // Compile the filter expression into BPF code
+    if (pcap_compile(global_pcap_handle, &filter, "ip or ip6", 0, PCAP_NETMASK_UNKNOWN) == -1) {
+        throw Exception(2, "pcap_compile() failed: " + std::string(pcap_geterr(global_pcap_handle)));
+    }
+
+    // Set the compiled filter
+    if (pcap_setfilter(global_pcap_handle, &filter) == -1) {
+        throw Exception(2, "pcap_setfilter() failed: " + std::string(pcap_geterr(global_pcap_handle)));
+    }
+
+    // Start capturing packets
     pcap_loop(global_pcap_handle, 0, Packet::handlePacket, reinterpret_cast<u_char*>(connManager));
+
+    // Close the capture handle after capturing
     if (global_pcap_handle != nullptr) {
         pcap_close(global_pcap_handle);
         global_pcap_handle = nullptr;

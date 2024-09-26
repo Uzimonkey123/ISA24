@@ -64,7 +64,7 @@ vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnectio
         if (sc.rx_bps == 0 && sc.tx_bps == 0 && sc.rx_pps == 0 && sc.tx_pps == 0) {
             continue;
         }
-
+        
         conn_list.push_back(sc);
     }
 
