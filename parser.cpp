@@ -13,9 +13,9 @@ Parser::Parser() {
 
 void Parser::parse(int argc, char* argv[]) {
     const struct option long_options[] = {
-        {"interface", required_argument, 0, 'i'},
-        {"order-by", required_argument, 0, 's'},
-        {"time", required_argument, 0, 't'},
+        {"i", required_argument, 0, 'i'},
+        {"s", required_argument, 0, 's'},
+        {"t", required_argument, 0, 't'},
         {nullptr, 0, nullptr, 0}
     };
 

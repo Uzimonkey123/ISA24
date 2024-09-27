@@ -7,6 +7,7 @@
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 void Packet::handlePacket(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
     Packet instance;
