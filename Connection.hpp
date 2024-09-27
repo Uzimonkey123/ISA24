@@ -23,7 +23,7 @@ class Connection {
 
         Connection(const std::string& src_ip, int src_port, const std::string& dst_ip, int dst_port, const std::string& protocol);
         
-        void updateTraffic(int packet_size, bool is_rx);
+        void updateTraffic(int packet_size, bool is_rx = false);
 };
 
 #endif

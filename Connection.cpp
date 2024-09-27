@@ -13,8 +13,8 @@ void Connection::updateTraffic(int packet_size, bool is_rx) {
     } else {
         tx_bytes += packet_size;
         tx_packets++;
-
+        
     }
-    
+
     last_update = std::chrono::steady_clock::now();
 }
