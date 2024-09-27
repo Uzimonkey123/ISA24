@@ -26,6 +26,7 @@ void signalHandler(int signum) {
     }
 
     endwin();
+
     exit(0);
 }
 
@@ -50,9 +51,6 @@ void packetCapture(ConnectionManager* connManager, const std::string& interface)
         throw Exception(2, "pcap_open_live() failed: " + std::string(errbuf));
     }
 
-    pcap_set_buffer_size(global_pcap_handle, 2 * 1024 * 1024);
-
-    // Compile the filter expression into BPF code
     if (pcap_compile(global_pcap_handle, &filter, "ip or ip6", 0, PCAP_NETMASK_UNKNOWN) == -1) {
         throw Exception(2, "pcap_compile() failed: " + std::string(pcap_geterr(global_pcap_handle)));
     }
@@ -84,6 +82,7 @@ int main(int argc, char* argv[]) {
 
     interval = ArgParse.getInterval();
     sort_by_bytes = ArgParse.getOrderBy() == 'b';
+    setGlobalInterface(ArgParse.getInterface());
 
     ConnectionManager connManager = ConnectionManager();
     connManagerPtr = &connManager;
