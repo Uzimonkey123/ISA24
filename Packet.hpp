@@ -3,17 +3,13 @@
 
 #include <pcap.h>
 #include <netinet/ether.h>
-#include <netinet/ip.h>
-#include <netinet/ip6.h>
-#include <netinet/tcp.h>
-#include <netinet/udp.h>
 #include <iostream>
 #include <iomanip>
-#include <arpa/inet.h>
 #include <cctype>
-#include <ctime>
-#include <sstream>
 #include <string>
+#include <vector>
+
+using namespace std;
 
 class Packet {
     public:
@@ -33,6 +29,13 @@ class Packet {
          * @param packet Packet data
         */
         void handlePacketNonStatic(u_char *userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
+
+        /**
+         * @brief Get the protocol name from the protocol number
+         * @param protocol_number Protocol number
+         * @return Protocol name, unknown if not found
+        */
+        string getProtocolNameFromNumber(int protocol_number);
 };
 
 #endif
