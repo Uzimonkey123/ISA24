@@ -2,6 +2,7 @@
 #include "Exception.hpp"
 #include "Packet.hpp"
 #include "ConnectionManager.hpp"
+#include "Display.hpp"
 
 #include <pcap.h>
 #include <iostream>
@@ -11,6 +12,7 @@
 #include <unistd.h>
 
 pcap_t* global_pcap_handle = nullptr;
+Display* displayPtr = nullptr;
 ConnectionManager* connManagerPtr = nullptr;
 int interval = 1;
 bool sort_by_bytes = true;
@@ -34,8 +36,9 @@ void signalHandler(int signum) {
 void refreshDisplay(int signum) {
     (void) signum;
 
-    if (connManagerPtr != nullptr) {
-        connManagerPtr->displayConnections(sort_by_bytes);  // Refresh the screen with ncurses
+    if (displayPtr != nullptr && connManagerPtr != nullptr) {
+        auto activeConnections = connManagerPtr->getActiveConnections(sort_by_bytes);
+        displayPtr->displayConnections(activeConnections);  // Refresh the screen with ncurses
     }
 
     alarm(interval);  // Set the next alarm to refresh the display
@@ -71,7 +74,7 @@ void packetCapture(ConnectionManager* connManager, const std::string& interface)
 }
 
 int main(int argc, char* argv[]) {
-    Parser ArgParse = Parser();
+    Parser ArgParse;
 
     try {
         ArgParse.parse(argc, argv);
@@ -84,18 +87,21 @@ int main(int argc, char* argv[]) {
     sort_by_bytes = ArgParse.getOrderBy() == 'b';
     setGlobalInterface(ArgParse.getInterface());
 
-    ConnectionManager connManager = ConnectionManager();
+    ConnectionManager connManager;
     connManagerPtr = &connManager;
+    
+    Display display;
+    displayPtr = &display;
 
-    signal(SIGINT, signalHandler);  // Handle Ctrl+C
-    signal(SIGALRM, refreshDisplay);  // Handle screen refresh
+    signal(SIGINT, signalHandler);   // Handle Ctrl+C for graceful exit
+    signal(SIGALRM, refreshDisplay); // Handle screen refresh
 
-    // Alarm for first refresh screen
-    alarm(1);
+    // Alarm for first refresh of the screen
+    alarm(interval);
 
     // Start packet capture in a separate thread
     std::thread captureThread(packetCapture, &connManager, ArgParse.getInterface());
-
     captureThread.join();
+
     return 0;
 }

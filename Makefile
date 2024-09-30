@@ -4,7 +4,7 @@ LDFLAGS = -lpcap -lncurses -pthread
 
 TARGET = isa-top
 
-SRCS = Connection.cpp KeyGenerator.cpp Bandwidth.cpp ConnectionManager.cpp Packet.cpp Exception.cpp parser.cpp main.cpp
+SRCS = Display.cpp Connection.cpp KeyGenerator.cpp Bandwidth.cpp ConnectionManager.cpp Packet.cpp Exception.cpp parser.cpp main.cpp
 HEADERS = $(SRCS:.cpp=.hpp)
 OBJS = $(SRCS:.cpp=.o)
 
