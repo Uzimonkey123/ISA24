@@ -49,7 +49,7 @@ void Packet::handlePacketNonStatic(u_char *userData, const struct pcap_pkthdr* p
             }
 
             // Store the connection for processing and display
-            connectionManager->storeConnection(sourceIp, src_port, destIp, dst_port, protocol, pkthdr->len);
+            connectionManager->storeConnection(sourceIp, src_port, destIp, dst_port, protocol, pkthdr->len, AF_INET);
             break;
         }
 
@@ -82,7 +82,7 @@ void Packet::handlePacketNonStatic(u_char *userData, const struct pcap_pkthdr* p
             }
 
             // Store the connection for processing and display
-            connectionManager->storeConnection(sourceIp, src_port, destIp, dst_port, protocol, pkthdr->len);
+            connectionManager->storeConnection(sourceIp, src_port, destIp, dst_port, protocol, pkthdr->len, AF_INET6);
             break;
         }
 
