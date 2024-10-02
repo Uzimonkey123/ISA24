@@ -18,14 +18,14 @@ class KeyGenerator {
     public:
         /**
          * @brief Generates a unique key for a connection
-         * @param src_ip Source IP address
-         * @param src_port Source port number
-         * @param dst_ip Destination IP address
-         * @param dst_port Destination port number
+         * @param sourceIp Source IP address
+         * @param sourcePort Source port number
+         * @param destIp Destination IP address
+         * @param destPort Destination port number
          * @param protocol Protocol used
          * @return Unique key for the connection
          */
-        string generateKey(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol);
+        string generateKey(const string& sourceIp, int sourcePort, const string& destIp, int destPort, const string& protocol);
 };
 
 #endif
