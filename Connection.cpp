@@ -1,4 +1,6 @@
 #include "Connection.hpp"
+#include "Exception.hpp"
+
 #include <ifaddrs.h>
 #include <netinet/ether.h>
 #include <netinet/ip.h>
@@ -31,8 +33,8 @@ string Connection::getInterfaceIp(const string& interface, int family) {
     char ip[INET6_ADDRSTRLEN];
 
     if (getifaddrs(&ifaddr) == -1) {
-        perror("getifaddrs");
-        return "";
+        throw Exception(3, "getifaddrs() failed");
+        exit(3);
     }
 
     for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
