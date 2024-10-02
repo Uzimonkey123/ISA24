@@ -31,8 +31,8 @@ void Display::displayConnections(const std::vector<ConnectionManager::SavedConne
 
         // Fixed width columns for proper alignment
         mvprintw(row, 0, "%-45s %-45s %-9s %-10s %-10s %-8s %-8s",
-                 (conn.src_ip + ":" + std::to_string(conn.src_port)).c_str(),
-                 (conn.dst_ip + ":" + std::to_string(conn.dst_port)).c_str(),
+                 (conn.sourceIp + ":" + std::to_string(conn.sourcePort)).c_str(),
+                 (conn.destIp + ":" + std::to_string(conn.destPort)).c_str(),
                  conn.protocol.c_str(),
                  rx_bytes_rate.c_str(), tx_bytes_rate.c_str(),
                  rx_packet_rate.c_str(), tx_packet_rate.c_str());

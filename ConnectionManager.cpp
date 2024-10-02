@@ -11,13 +11,13 @@ void setGlobalInterface(const string& interface) {
     globalInterface = interface;
 }
 
-void ConnectionManager::storeConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, int family) {
+void ConnectionManager::storeConnection(const string& sourceIp, int sourcePort, const string& destIp, int destPort, const string& protocol, int packetSize, int family) {
     lock_guard<mutex> lock(conn_mutex); // Lock the connections map
 
     // Generate the key, both ways for bi-directional traffic
     KeyGenerator keyGen;
-    string key = keyGen.generateKey(src_ip, src_port, dst_ip, dst_port, protocol);
-    string reverseKey = keyGen.generateKey(dst_ip, dst_port, src_ip, src_port, protocol);
+    string key = keyGen.generateKey(sourceIp, sourcePort, destIp, destPort, protocol);
+    string reverseKey = keyGen.generateKey(destIp, destPort, sourceIp, sourcePort, protocol);
 
     // Get the interface IP
     string interfaceIp = Connection::getInterfaceIp(globalInterface, family);
@@ -25,37 +25,37 @@ void ConnectionManager::storeConnection(const string& src_ip, int src_port, cons
     // Check if the connection already exists
     auto it = connections.find(key);
     if (it != connections.end()) {
-        trafficRoute(it->second, src_ip, dst_ip, packet_size, interfaceIp);
+        trafficRoute(it->second, sourceIp, destIp, packetSize, interfaceIp);
         return;
     }
 
     // Same check, but in the other direction
     it = connections.find(reverseKey);
     if (it != connections.end()) {
-        trafficRoute(it->second, src_ip, dst_ip, packet_size, interfaceIp);
+        trafficRoute(it->second, sourceIp, destIp, packetSize, interfaceIp);
         return;
     }
 
     // Create a new connection if it doesn't exist
-    connections[key] = Connection(src_ip, src_port, dst_ip, dst_port, protocol);
-    trafficRoute(connections[key], src_ip, dst_ip, packet_size, interfaceIp);
+    connections[key] = Connection(sourceIp, sourcePort, destIp, destPort, protocol);
+    trafficRoute(connections[key], sourceIp, destIp, packetSize, interfaceIp);
 }
 
-void ConnectionManager::trafficRoute(Connection& connection, const string& src_ip, const string& dst_ip, int packet_size, const string& interfaceIp) {
-    if (src_ip == interfaceIp) {
-        connection.updateTraffic(packet_size, false); // Tx
+void ConnectionManager::trafficRoute(Connection& connection, const string& sourceIp, const string& destIp, int packetSize, const string& interfaceIp) {
+    if (sourceIp == interfaceIp) {
+        connection.updateTraffic(packetSize, false); // Tx
 
-    } else if (dst_ip == interfaceIp) {
-        connection.updateTraffic(packet_size, true); // Rx
+    } else if (destIp == interfaceIp) {
+        connection.updateTraffic(packetSize, true); // Rx
 
     } else {
-        connection.updateTraffic(packet_size); // Undecided (tx)
+        connection.updateTraffic(packetSize); // Undecided (tx)
         
     }
 }
 
 vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnections(bool sort_by_bytes) {
-    vector<SavedConnection> conn_list;
+    vector<SavedConnection> connList;
 
     for (auto& it : connections) {
         Connection& conn = it.second;
@@ -71,7 +71,7 @@ vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnectio
             continue;
         }
         
-        conn_list.push_back(sc);
+        connList.push_back(sc);
     }
 
     // Sort based on bytes or packets
@@ -84,7 +84,7 @@ vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnectio
             return (a.rx_pps + a.tx_pps) > (b.rx_pps + b.tx_pps); // Sort by packets
         };
 
-    sort(conn_list.begin(), conn_list.end(), custom_sort);
+    sort(connList.begin(), connList.end(), custom_sort);
 
-    return conn_list;
+    return connList;
 }

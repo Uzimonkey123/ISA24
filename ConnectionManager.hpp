@@ -44,25 +44,25 @@ class ConnectionManager {
 
         /**
          * @brief Store a connection in the connection manager class for further reaching
-         * @param src_ip Source IP address
-         * @param src_port Source port
-         * @param dst_ip Destination IP address
-         * @param dst_port Destination port
+         * @param sourceIp Source IP address
+         * @param sourcePort Source port
+         * @param destIp Destination IP address
+         * @param destPort Destination port
          * @param protocol Protocol name
-         * @param packet_size Size of the packet
+         * @param packetSize Size of the packet
          * @param family Address family (AF_INET or AF_INET6)
          */
-        void storeConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, int family);
+        void storeConnection(const string& sourceIp, int sourcePort, const string& destIp, int destPort, const string& protocol, int packetSize, int family);
 
         /**
          * @brief Classify the traffic as Rx, Tx or undecided
          * @param connection Connection object
-         * @param src_ip Source IP address
-         * @param dst_ip Destination IP address
-         * @param packet_size Size of the packet
+         * @param sourceIp Source IP address
+         * @param destIp Destination IP address
+         * @param packetSize Size of the packet
          * @param interfaceIp Interface IP address
          */
-        void trafficRoute(Connection& connection, const string& src_ip, const string& dst_ip, int packet_size, const string& interfaceIp);
+        void trafficRoute(Connection& connection, const string& sourceIp, const string& destIp, int packetSize, const string& interfaceIp);
 
         /**
          * @brief Get the active connections ready to display

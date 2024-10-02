@@ -7,18 +7,18 @@
 #include <netinet/udp.h>
 #include <arpa/inet.h>
 
-Connection::Connection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol)
-    : src_ip(src_ip), dst_ip(dst_ip), src_port(src_port), dst_port(dst_port), protocol(protocol) {
+Connection::Connection(const string& sourceIp, int sourcePort, const string& destIp, int destPort, const string& protocol)
+    : sourceIp(sourceIp), destIp(destIp), sourcePort(sourcePort), destPort(destPort), protocol(protocol) {
     last_update = chrono::steady_clock::now();
 }
 
-void Connection::updateTraffic(int packet_size, bool is_rx) {
+void Connection::updateTraffic(int packetSize, bool is_rx) {
     if (is_rx) {
-        rx_bytes += packet_size;
+        rx_bytes += packetSize;
         rx_packets++;
 
     } else {
-        tx_bytes += packet_size;
+        tx_bytes += packetSize;
         tx_packets++;
         
     }

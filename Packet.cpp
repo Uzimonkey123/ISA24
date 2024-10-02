@@ -29,27 +29,27 @@ void Packet::handlePacketNonStatic(u_char *userData, const struct pcap_pkthdr* p
             inet_ntop(AF_INET, &(ipHeader->ip_src), sourceIp, INET_ADDRSTRLEN);
             inet_ntop(AF_INET, &(ipHeader->ip_dst), destIp, INET_ADDRSTRLEN);
 
-            int src_port = 0;
-            int dst_port = 0;
+            int sourcePort = 0;
+            int destPort = 0;
             string protocol = getProtocolNameFromNumber(ipHeader->ip_p);
 
             // Determine if it's TCP or UDP to get port numbers
             if (ipHeader->ip_p == IPPROTO_TCP) {
                 const struct tcphdr* tcpHeader = (struct tcphdr*)(packet + sizeof(struct ether_header) + ipHeader->ip_hl * 4);
-                src_port = ntohs(tcpHeader->source);
-                dst_port = ntohs(tcpHeader->dest);
+                sourcePort = ntohs(tcpHeader->source);
+                destPort = ntohs(tcpHeader->dest);
                 protocol = "tcp";
 
             } else if (ipHeader->ip_p == IPPROTO_UDP) {
                 const struct udphdr* udpHeader = (struct udphdr*)(packet + sizeof(struct ether_header) + ipHeader->ip_hl * 4);
-                src_port = ntohs(udpHeader->source);
-                dst_port = ntohs(udpHeader->dest);
+                sourcePort = ntohs(udpHeader->source);
+                destPort = ntohs(udpHeader->dest);
                 protocol = "udp";
 
             }
 
             // Store the connection for processing and display
-            connectionManager->storeConnection(sourceIp, src_port, destIp, dst_port, protocol, pkthdr->len, AF_INET);
+            connectionManager->storeConnection(sourceIp, sourcePort, destIp, destPort, protocol, pkthdr->len, AF_INET);
             break;
         }
 
@@ -62,27 +62,27 @@ void Packet::handlePacketNonStatic(u_char *userData, const struct pcap_pkthdr* p
             inet_ntop(AF_INET6, &ipv6Header->ip6_src, sourceIp, INET6_ADDRSTRLEN);
             inet_ntop(AF_INET6, &ipv6Header->ip6_dst, destIp, INET6_ADDRSTRLEN);
 
-            int src_port = 0;
-            int dst_port = 0;
+            int sourcePort = 0;
+            int destPort = 0;
             string protocol = getProtocolNameFromNumber(ipv6Header->ip6_nxt);
 
             // Determine if it's TCP or UDP to get port numbers
             if (ipv6Header->ip6_nxt == IPPROTO_TCP) {
                 const struct tcphdr* tcpHeader = (struct tcphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
-                src_port = ntohs(tcpHeader->source);
-                dst_port = ntohs(tcpHeader->dest);
+                sourcePort = ntohs(tcpHeader->source);
+                destPort = ntohs(tcpHeader->dest);
                 protocol = "tcp";
 
             } else if (ipv6Header->ip6_nxt == IPPROTO_UDP) {
                 const struct udphdr* udpHeader = (struct udphdr*)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
-                src_port = ntohs(udpHeader->source);
-                dst_port = ntohs(udpHeader->dest);
+                sourcePort = ntohs(udpHeader->source);
+                destPort = ntohs(udpHeader->dest);
                 protocol = "udp";
 
             }
 
             // Store the connection for processing and display
-            connectionManager->storeConnection(sourceIp, src_port, destIp, dst_port, protocol, pkthdr->len, AF_INET6);
+            connectionManager->storeConnection(sourceIp, sourcePort, destIp, destPort, protocol, pkthdr->len, AF_INET6);
             break;
         }
 

@@ -9,10 +9,10 @@ using namespace std;
 
 class Connection {
     public:
-        string src_ip;
-        string dst_ip;
-        int src_port;
-        int dst_port;
+        string sourceIp;
+        string destIp;
+        int sourcePort;
+        int destPort;
         string protocol;
         uint64_t rx_bytes = 0;
         uint64_t tx_bytes = 0;
@@ -27,14 +27,14 @@ class Connection {
         /**
          * @brief Construct a new Connection object, used to store connection information
          */
-        Connection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol);
+        Connection(const string& sourceIp, int sourcePort, const string& destIp, int destPort, const string& protocol);
         
         /**
          * @brief Update the traffic statistics for the connection
-         * @param packet_size Size of the packet
+         * @param packetSize Size of the packet
          * @param is_rx True if the packet is received, false if transmitted
          */
-        void updateTraffic(int packet_size, bool is_rx = false);
+        void updateTraffic(int packetSize, bool is_rx = false);
 
         /**
          * @brief Get the IP address of the specified interface
