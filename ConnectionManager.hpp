@@ -55,6 +55,16 @@ class ConnectionManager {
         void storeConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, int family);
 
         /**
+         * @brief Classify the traffic as Rx, Tx or undecided
+         * @param connection Connection object
+         * @param src_ip Source IP address
+         * @param dst_ip Destination IP address
+         * @param packet_size Size of the packet
+         * @param interfaceIp Interface IP address
+         */
+        void trafficRoute(Connection& connection, const string& src_ip, const string& dst_ip, int packet_size, const string& interfaceIp);
+
+        /**
          * @brief Get the active connections ready to display
          * @param sort_by_bytes True to sort by bytes, false to sort by packets
          * @return vector<SavedConnection> List of active connections

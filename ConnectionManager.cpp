@@ -12,16 +12,46 @@ void setGlobalInterface(const string& interface) {
 }
 
 void ConnectionManager::storeConnection(const string& src_ip, int src_port, const string& dst_ip, int dst_port, const string& protocol, int packet_size, int family) {
-    lock_guard<mutex> lock(conn_mutex);
+    lock_guard<mutex> lock(conn_mutex); // Lock the connections map
 
+    // Generate the key, both ways for bi-directional traffic
     KeyGenerator keyGen;
     string key = keyGen.generateKey(src_ip, src_port, dst_ip, dst_port, protocol);
     string reverseKey = keyGen.generateKey(dst_ip, dst_port, src_ip, src_port, protocol);
 
-    // Get the interface IP to check if the packet matches the interface
+    // Get the interface IP
     string interfaceIp = Connection::getInterfaceIp(globalInterface, family);
+    
+    // Check if the connection already exists
+    auto it = connections.find(key);
+    if (it != connections.end()) {
+        trafficRoute(it->second, src_ip, dst_ip, packet_size, interfaceIp);
+        return;
+    }
 
-    // TODO: Implement the connection store logic (check it with interface IP too)
+    // Same check, but in the other direction
+    it = connections.find(reverseKey);
+    if (it != connections.end()) {
+        trafficRoute(it->second, src_ip, dst_ip, packet_size, interfaceIp);
+        return;
+    }
+
+    // Create a new connection if it doesn't exist
+    connections[key] = Connection(src_ip, src_port, dst_ip, dst_port, protocol);
+    trafficRoute(connections[key], src_ip, dst_ip, packet_size, interfaceIp);
+}
+
+void ConnectionManager::trafficRoute(Connection& connection, const string& src_ip, const string& dst_ip, int packet_size, const string& interfaceIp) {
+    if (src_ip == interfaceIp) {
+        connection.updateTraffic(packet_size, false); // Tx
+
+    } else if (dst_ip == interfaceIp) {
+        connection.updateTraffic(packet_size, true); // Rx
+
+    } else {
+        connection.updateTraffic(packet_size); // Undecided (tx)
+        
+    }
 }
 
 vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnections(bool sort_by_bytes) {
