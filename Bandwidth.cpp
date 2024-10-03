@@ -1,27 +1,27 @@
 #include "Bandwidth.hpp"
 
-double Bandwidth::calculateRate(uint64_t current, uint64_t previous, double elapsed_time) {
-    return static_cast<double>(current - previous) / elapsed_time;
+double Bandwidth::calculateRate(uint64_t current, uint64_t previous, double elapsedTime) {
+    return static_cast<double>(current - previous) / elapsedTime;
 }
 
 void Bandwidth::calculateBandwidth(uint64_t current_rx_bytes, uint64_t current_tx_bytes, uint64_t current_rx_packets, uint64_t current_tx_packets, 
                                     double& rx_bps, double& tx_bps, double& rx_pps, double& tx_pps) {
     auto now = chrono::steady_clock::now();
-    double elapsed_time = chrono::duration<double>(now - update_time).count();
+    double elapsedTime = chrono::duration<double>(now - updateTime).count();
 
-    if (elapsed_time > 0) {
-        rx_bps = calculateRate(current_rx_bytes, rx_bytes, elapsed_time);
-        tx_bps = calculateRate(current_tx_bytes, tx_bytes, elapsed_time);
+    if (elapsedTime > 0) {
+        rx_bps = calculateRate(current_rx_bytes, rx_bytes, elapsedTime);
+        tx_bps = calculateRate(current_tx_bytes, tx_bytes, elapsedTime);
 
-        rx_pps = calculateRate(current_rx_packets, rx_packets, elapsed_time);
-        tx_pps = calculateRate(current_tx_packets, tx_packets, elapsed_time);
+        rx_pps = calculateRate(current_rx_packets, rx_packets, elapsedTime);
+        tx_pps = calculateRate(current_tx_packets, tx_packets, elapsedTime);
     }
 
     rx_bytes = current_rx_bytes;
     tx_bytes = current_tx_bytes;
     rx_packets = current_rx_packets;
     tx_packets = current_tx_packets;
-    update_time = now;
+    updateTime = now;
 }
 
 string Bandwidth::formatBandwidth(double bps) {

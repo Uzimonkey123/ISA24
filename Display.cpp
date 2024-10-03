@@ -7,8 +7,8 @@ Display::Display() {
     noecho();
     nodelay(stdscr, TRUE);
     
-    curs_set(0);
-    mousemask(0, NULL);
+    curs_set(0); // Hide the cursor
+    mousemask(0, NULL); // Disable mouse events
 }
 
 void Display::displayConnections(const std::vector<ConnectionManager::SavedConnection>& connections) {
@@ -17,10 +17,11 @@ void Display::displayConnections(const std::vector<ConnectionManager::SavedConne
     mvprintw(1, 0, "%-45s %-45s %-9s %-10s %-10s %-8s %-8s", 
              "Src IP:Port", "Dst IP:Port", "Protocol", "Rx Rate", "Tx Rate", "Rx P/s", "Tx P/s");
 
-    int row = 2;
+    int row = 2; // Start at row 3
 
     // Display the connections
     for (size_t i = 0; i < std::min(connections.size(), size_t(10)); ++i) {
+        // Get the connection and its bandwidth statistics
         const ConnectionManager::SavedConnection& sc = connections[i];
         const Connection& conn = sc.conn;
 

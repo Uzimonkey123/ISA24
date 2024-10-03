@@ -12,6 +12,7 @@ Parser::Parser() {
 }
 
 void Parser::parse(int argc, char* argv[]) {
+    // Define the long options
     const struct option long_options[] = {
         {"i", required_argument, 0, 'i'},
         {"s", required_argument, 0, 's'},
@@ -22,6 +23,7 @@ void Parser::parse(int argc, char* argv[]) {
     int option_index = 0;
     int option;
 
+    // Parse the arguments
     while((option = getopt_long(argc, argv, "i:s:t:", long_options, &option_index)) != -1) {
         switch(option) {
             case 'i':
@@ -35,15 +37,18 @@ void Parser::parse(int argc, char* argv[]) {
             case 's':
                 if(strcmp(optarg, "b") == 0) {
                     orderBy = 'b';
+
                 } else if(strcmp(optarg, "p") == 0) {
                     orderBy = 'p';
+
                 } else {
                     throw Exception(1, "Invalid argument for -s");
+                    
                 }
                 break;
 
             case 't':
-                interval = std::atoi(optarg);
+                interval = atoi(optarg);
                 break;
 
             default:
@@ -56,7 +61,7 @@ void Parser::parse(int argc, char* argv[]) {
     }
 }
 
-std::string Parser::getInterface() {
+string Parser::getInterface() {
     return interface;
 }
 

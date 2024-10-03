@@ -18,7 +18,7 @@ class Connection {
         uint64_t tx_bytes = 0;
         uint64_t rx_packets = 0;
         uint64_t tx_packets = 0;
-        chrono::steady_clock::time_point last_update; // Last time the connection was updated
+        chrono::steady_clock::time_point lastUpdate; // Last time the connection was updated
         mutable Bandwidth bw; // Bandwidth object to calculate bandwidth and packet rate
 
         // Default constructor

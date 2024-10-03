@@ -11,6 +11,8 @@
 #include <signal.h>
 #include <unistd.h>
 
+using namespace std;
+
 pcap_t* global_pcap_handle = nullptr;
 Display* displayPtr = nullptr;
 ConnectionManager* connManagerPtr = nullptr;
@@ -21,7 +23,7 @@ bool sort_by_bytes = true;
 void signalHandler(int signum) {
     (void) signum;
 
-    if (global_pcap_handle != nullptr) {
+    if (global_pcap_handle != nullptr) { // Close the pcap handle
         pcap_breakloop(global_pcap_handle);
         pcap_close(global_pcap_handle);
         global_pcap_handle = nullptr;
@@ -44,23 +46,23 @@ void refreshDisplay(int signum) {
     alarm(interval);  // Set the next alarm to refresh the display
 }
 
-void packetCapture(ConnectionManager* connManager, const std::string& interface) {
+void packetCapture(ConnectionManager* connManager, const string& interface) {
     char errbuf[PCAP_ERRBUF_SIZE];
     struct bpf_program filter;
 
     // Open the device for capturing
     global_pcap_handle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
     if (global_pcap_handle == nullptr) {
-        throw Exception(2, "pcap_open_live() failed: " + std::string(errbuf));
+        throw Exception(2, "pcap_open_live() failed: " + string(errbuf));
     }
 
     if (pcap_compile(global_pcap_handle, &filter, "ip or ip6", 0, PCAP_NETMASK_UNKNOWN) == -1) {
-        throw Exception(2, "pcap_compile() failed: " + std::string(pcap_geterr(global_pcap_handle)));
+        throw Exception(2, "pcap_compile() failed: " + string(pcap_geterr(global_pcap_handle)));
     }
 
     // Set the compiled filter
     if (pcap_setfilter(global_pcap_handle, &filter) == -1) {
-        throw Exception(2, "pcap_setfilter() failed: " + std::string(pcap_geterr(global_pcap_handle)));
+        throw Exception(2, "pcap_setfilter() failed: " + string(pcap_geterr(global_pcap_handle)));
     }
 
     // Start capturing packets
@@ -79,7 +81,7 @@ int main(int argc, char* argv[]) {
     try {
         ArgParse.parse(argc, argv);
     } catch (Exception &e) {
-        std::cerr << e.what() << std::endl;
+        cerr << e.what() << endl;
         return e.getCode();
     }
 
@@ -100,7 +102,7 @@ int main(int argc, char* argv[]) {
     alarm(interval);
 
     // Start packet capture in a separate thread
-    std::thread captureThread(packetCapture, &connManager, ArgParse.getInterface());
+    thread captureThread(packetCapture, &connManager, ArgParse.getInterface());
     captureThread.join();
 
     return 0;
