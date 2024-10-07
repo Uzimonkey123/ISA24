@@ -1,0 +1,35 @@
+.TH ISA-TOP 1
+.SH NAME
+ISA-TOP \- monitor network communication and calculate bandwidth in the given intervals.
+.SH SYNOPSIS
+.B ISA-TOP
+[\fB\-i\fR \fIINTERFACE\fR]
+[\fB\-s\fR \fB b | p\fR]
+[\fB\-t\fR \fITIME_INTERVAL\fR]
+.SH DESCRIPTION
+.B ISA-TOP
+is a network communication tool that captures packet data on a network interface, displaying bandwidth and packet rate in the last second, aswell as IP, port and protocol of the communicating sides.
+.TP
+The tool is working only as a console application, sudo permissions required to run the program.
+.SH OPTIONS
+.TP
+.BR \-i ", " \-\-i =\fIINTERFACE\fR
+Specify interface for listening to incoming or outgoing communication.
+For example, "eth0" or "lo".
+.TP
+.BR \-s ", " \-\-s =\fBb | p\fR
+Sort output by the number of bytes per second (b) or packets per second (p).
+The default is to sort by the number of received and transmitted bytes per second.
+Optional!
+.TP
+.BR \-t ", " \-\-t =\fITIME_INTERVAL\fR
+Set the refresh interval in seconds.
+The default interval is 1 second.
+Optional!
+.SH EXAMPLES
+.TP
+.B isa-top \-i eth0 \-s b \-t 10
+Capture network communication on the "eth0" interface, sorting the output by bytes per second and refreshing every 2 seconds.
+.TP
+.B isa-top \-i lo \-s p
+Capture network communication on the "lo" interface, sorting the output by packets per second and refreshing with the default interval of 1 second.
