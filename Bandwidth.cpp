@@ -4,23 +4,23 @@ double Bandwidth::calculateRate(uint64_t current, uint64_t previous, double elap
     return static_cast<double>(current - previous) / elapsedTime;
 }
 
-void Bandwidth::calculateBandwidth(uint64_t current_rx_bytes, uint64_t current_tx_bytes, uint64_t current_rx_packets, uint64_t current_tx_packets, 
+void Bandwidth::calculateBandwidth(uint64_t currentRxBytes, uint64_t currentTxBytes, uint64_t currentRxPackets, uint64_t currentTxPackets, 
                                     double& rx_bps, double& tx_bps, double& rx_pps, double& tx_pps) {
     auto now = chrono::steady_clock::now();
     double elapsedTime = chrono::duration<double>(now - updateTime).count();
 
     if (elapsedTime > 0) {
-        rx_bps = calculateRate(current_rx_bytes, rx_bytes, elapsedTime);
-        tx_bps = calculateRate(current_tx_bytes, tx_bytes, elapsedTime);
+        rx_bps = calculateRate(currentRxBytes, rxBytes, elapsedTime);
+        tx_bps = calculateRate(currentTxBytes, txBytes, elapsedTime);
 
-        rx_pps = calculateRate(current_rx_packets, rx_packets, elapsedTime);
-        tx_pps = calculateRate(current_tx_packets, tx_packets, elapsedTime);
+        rx_pps = calculateRate(currentRxPackets, rxPackets, elapsedTime);
+        tx_pps = calculateRate(currentTxPackets, txPackets, elapsedTime);
     }
 
-    rx_bytes = current_rx_bytes;
-    tx_bytes = current_tx_bytes;
-    rx_packets = current_rx_packets;
-    tx_packets = current_tx_packets;
+    rxBytes = currentRxBytes;
+    txBytes = currentTxBytes;
+    rxPackets = currentRxPackets;
+    txPackets = currentTxPackets;
     updateTime = now;
 }
 

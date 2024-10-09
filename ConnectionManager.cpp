@@ -71,7 +71,7 @@ vector<ConnectionManager::SavedConnection> ConnectionManager::getActiveConnectio
         sc.conn = conn;
 
         // Calculate bandwidth and packet rate
-        conn.bw.calculateBandwidth(conn.rx_bytes, conn.tx_bytes, conn.rx_packets, conn.tx_packets,
+        conn.bw.calculateBandwidth(conn.rxBytes, conn.txBytes, conn.rxPackets, conn.txPackets,
                                    sc.rx_bps, sc.tx_bps, sc.rx_pps, sc.tx_pps);
 
         // Skip if both rx and tx rates are zero

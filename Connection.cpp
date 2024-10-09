@@ -16,12 +16,12 @@ Connection::Connection(const string& sourceIp, int sourcePort, const string& des
 
 void Connection::updateTraffic(int packetSize, bool is_rx) {
     if (is_rx) {
-        rx_bytes += packetSize; // Update the received bytes
-        rx_packets++; // Update the received packets
+        rxBytes += packetSize; // Update the received bytes
+        rxPackets++; // Update the received packets
 
     } else {
-        tx_bytes += packetSize; // Update the transmitted bytes
-        tx_packets++; // Update the transmitted packets
+        txBytes += packetSize; // Update the transmitted bytes
+        txPackets++; // Update the transmitted packets
         
     }
 

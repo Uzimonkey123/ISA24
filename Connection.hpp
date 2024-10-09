@@ -14,10 +14,10 @@ class Connection {
         int sourcePort;
         int destPort;
         string protocol;
-        uint64_t rx_bytes = 0;
-        uint64_t tx_bytes = 0;
-        uint64_t rx_packets = 0;
-        uint64_t tx_packets = 0;
+        uint64_t rxBytes = 0;
+        uint64_t txBytes = 0;
+        uint64_t rxPackets = 0;
+        uint64_t txPackets = 0;
         chrono::steady_clock::time_point lastUpdate; // Last time the connection was updated
         mutable Bandwidth bw; // Bandwidth object to calculate bandwidth and packet rate
 
