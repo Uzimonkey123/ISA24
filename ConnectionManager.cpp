@@ -11,24 +11,19 @@ void setGlobalInterface(const string& interface) {
     globalInterface = interface;
 }
 
-Connection& ConnectionManager::manageConnection(const string& forwardKey, const string& reverseKey, const string& sourceIp, int sourcePort, const string& destIp, 
-                                                int destPort, const string& protocol) {
-    // Attempt to find the connection using forward or reverse keys
-    auto it = connections.find(forwardKey);
-    if (it != connections.end()) {
+Connection& ConnectionManager::manageConnection(const string& forwardKey, const string& reverseKey, const string& sourceIp, 
+                                                int sourcePort, const string& destIp, int destPort, const string& protocol) {
+    // Try to find the connection using forward or reverse keys
+    if(auto it = connections.find(forwardKey); it != connections.end()) {
         return it->second;
     }
 
-    it = connections.find(reverseKey);
-    if (it != connections.end()) {
+    if(auto it = connections.find(reverseKey); it != connections.end()) {
         return it->second;
     }
 
-    // Create a new connection if not found and insert it into the map
-    auto [newIt, inserted] = connections.emplace(forwardKey, Connection(sourceIp, sourcePort, destIp, destPort, protocol));
-
-    // Return the connection
-    return newIt->second;
+    // If not found, create a new connection using try_emplace
+    return connections.try_emplace(forwardKey, sourceIp, sourcePort, destIp, destPort, protocol).first->second;
 }
 
 void ConnectionManager::storeConnection(const string& sourceIp, int sourcePort, const string& destIp, int destPort, const string& protocol, int packetSize, int family) {
