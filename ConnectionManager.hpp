@@ -5,7 +5,7 @@
 #include "Connection.hpp"
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <ncurses.h>
 #include <chrono>
 #include <mutex>
@@ -22,7 +22,7 @@ void setGlobalInterface(const string& interface);
 class ConnectionManager {
     private:
         mutex conn_mutex; // Mutex to protect the connections map
-        map<string, Connection> connections; // Map to store connections
+        unordered_map<string, Connection> connections; // Map to store connections
 
         /**
          * @brief Classify the traffic as Rx, Tx or undecided
