@@ -1,4 +1,5 @@
 #include "KeyGenerator.hpp"
+#include <algorithm>
 
 string KeyGenerator::combineIpPort(const string& ip, int port) {
     return ip + ":" + to_string(port); // Combine IP and port
@@ -8,6 +9,7 @@ string KeyGenerator::generateKey(const string& sourceIp, int sourcePort, const s
     string combinedSrc = combineIpPort(sourceIp, sourcePort); // Combine source IP and port
     string combinedDst = combineIpPort(destIp, destPort); // Combine destination IP and port
 
-    return combinedSrc < combinedDst ? combinedSrc + "-" + combinedDst + "-" + protocol 
-                                     : combinedDst + "-" + combinedSrc + "-" + protocol;
+    auto [minIp, maxIp] = minmax(combinedSrc, combinedDst); // Get the minimum and maximum of the combined strings
+
+    return minIp + "-" + maxIp + "-" + protocol;
 }
