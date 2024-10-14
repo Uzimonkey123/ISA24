@@ -1,14 +1,22 @@
 #include "Bandwidth.hpp"
 
 double Bandwidth::calculateRate(uint64_t current, uint64_t previous, double elapsedTime) {
+    // Threshold to avoid division by very small numbers (not just zero)
+    double minElapsedTime = 1e-9;
+
+    if (elapsedTime < minElapsedTime) {
+        return 0.0;
+    }
+
     return static_cast<double>(current - previous) / elapsedTime;
 }
 
 void Bandwidth::calculateBandwidth(uint64_t currentRxBytes, uint64_t currentTxBytes, uint64_t currentRxPackets, uint64_t currentTxPackets, 
                                     double& rx_bps, double& tx_bps, double& rx_pps, double& tx_pps) {
-    auto now = chrono::steady_clock::now();
-    double elapsedTime = chrono::duration<double>(now - updateTime).count();
+    auto now = chrono::steady_clock::now(); // Current time
+    double elapsedTime = chrono::duration<double>(now - updateTime).count(); // Time elapsed since last update
 
+    // Calculate the rate of change
     if (elapsedTime > 0) {
         rx_bps = calculateRate(currentRxBytes, rxBytes, elapsedTime);
         tx_bps = calculateRate(currentTxBytes, txBytes, elapsedTime);
@@ -17,6 +25,7 @@ void Bandwidth::calculateBandwidth(uint64_t currentRxBytes, uint64_t currentTxBy
         tx_pps = calculateRate(currentTxPackets, txPackets, elapsedTime);
     }
 
+    // Update the counters
     rxBytes = currentRxBytes;
     txBytes = currentTxBytes;
     rxPackets = currentRxPackets;
@@ -25,7 +34,7 @@ void Bandwidth::calculateBandwidth(uint64_t currentRxBytes, uint64_t currentTxBy
 }
 
 string Bandwidth::formatBandwidth(double bps) {
-    ostringstream oss;
+    ostringstream oss; // Output string stream
 
     if (bps >= 1e9) {
         oss << fixed << setprecision(1) << (bps / 1e9) << " Gbps";
