@@ -45,15 +45,14 @@ void ConnectionManager::storeConnection(const string& sourceIp, int sourcePort, 
 }
 
 void ConnectionManager::trafficRoute(Connection& connection, const string& sourceIp, const string& destIp, int packetSize, const string& interfaceIp) {
-    if (sourceIp == interfaceIp) {
-        connection.updateTraffic(packetSize, false); // Tx
-
-    } else if (destIp == interfaceIp) {
+    (void) sourceIp;
+    
+    if(destIp == interfaceIp) {
         connection.updateTraffic(packetSize, true); // Rx
 
     } else {
-        connection.updateTraffic(packetSize); // Undecided (tx)
-        
+        connection.updateTraffic(packetSize); // Tx
+
     }
 }
 

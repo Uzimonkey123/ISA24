@@ -4,10 +4,12 @@
 #include <exception>
 #include <string>
 
-class Exception : public std::exception {
+using namespace std;
+
+class Exception : public exception {
     private:
         int errorCode;
-        std::string errorMessage;
+        string errorMessage;
 
     public:
         /**
@@ -15,7 +17,7 @@ class Exception : public std::exception {
          * @param code Error code
          * @param message Error message
          */
-        Exception(int code, const std::string& message);
+        Exception(int code, const string& message);
 
         /**
          * @brief Get the error message
