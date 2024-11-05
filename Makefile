@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g
+CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic -g
 LDFLAGS = -lpcap -lncurses -pthread
 
 TARGET = isa-top
