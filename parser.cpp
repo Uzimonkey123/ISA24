@@ -2,8 +2,8 @@
 #include "Exception.hpp"
 
 #include <iostream>
-#include <getopt.h>
-#include <cstring>
+#include <string>
+#include <stdexcept>
 
 Parser::Parser() {
     interface = "";
@@ -12,51 +12,66 @@ Parser::Parser() {
 }
 
 void Parser::parse(int argc, char* argv[]) {
-    // Define the long options
-    const struct option long_options[] = {
-        {"i", required_argument, 0, 'i'},
-        {"s", required_argument, 0, 's'},
-        {"t", required_argument, 0, 't'},
-        {nullptr, 0, nullptr, 0}
-    };
+    for (int i = 1; i < argc; ++i) {
+        string arg = argv[i];
 
-    int option_index = 0;
-    int option;
+        // Ensure it's a valid option
+        if (arg[0] == '-') {
+            char option = arg[1]; // Get the option character after '-'
 
-    // Parse the arguments
-    while((option = getopt_long(argc, argv, "i:s:t:", long_options, &option_index)) != -1) {
-        switch(option) {
-            case 'i':
-                if(optarg == nullptr || optarg[0] == '-') {
-                    throw Exception(1, "Invalid argument for -i");
-                }
+            switch (option) {
+                case 'i':
+                    if (i + 1 < argc && argv[i + 1][0] != '-') {
+                        interface = argv[++i];
+                    } else {
+                        throw Exception(1, "Invalid argument for -i");
+                    }
+                    break;
 
-                interface = optarg;
-                break;
+                case 's':
+                    if (i + 1 < argc && argv[i + 1][0] != '-') {
+                        string order = argv[++i];
 
-            case 's':
-                if(strcmp(optarg, "b") == 0) {
-                    orderBy = 'b';
+                        if (order == "b") {
+                            orderBy = 'b';
 
-                } else if(strcmp(optarg, "p") == 0) {
-                    orderBy = 'p';
+                        } else if (order == "p") {
+                            orderBy = 'p';
 
-                } else {
-                    throw Exception(1, "Invalid argument for -s");
-                    
-                }
-                break;
+                        } else {
+                            throw Exception(1, "Invalid argument for -s");
 
-            case 't':
-                interval = atoi(optarg);
-                break;
+                        }
+                    } else {
+                        throw Exception(1, "Invalid argument for -s");
 
-            default:
-                throw Exception(1, "Invalid argument");
+                    }
+                    break;
+
+                case 't':
+                    if (i + 1 < argc && argv[i + 1][0] != '-') {
+                        try {
+                            interval = stoi(argv[++i]);
+
+                        } catch (const invalid_argument&) {
+                            throw Exception(1, "Invalid argument for -t");
+
+                        }
+                    } else {
+                        throw Exception(1, "Invalid argument for -t");
+                        
+                    }
+                    break;
+
+                default:
+                    throw Exception(1, "Invalid argument");
+            }
+        } else {
+            throw Exception(1, "Invalid argument format");
         }
     }
 
-    if(interface == "") {
+    if (interface.empty()) {
         throw Exception(1, "Interface is required");
     }
 }
