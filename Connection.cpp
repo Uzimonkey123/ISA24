@@ -28,6 +28,7 @@ void Connection::updateTraffic(int packetSize, bool is_rx) {
     lastUpdate = chrono::steady_clock::now();
 }
 
+// Basics of the code taken from: https://stackoverflow.com/questions/4139405/how-can-i-get-to-know-the-ip-address-for-interfaces-in-c
 string Connection::getInterfaceIp(const string& interface, int family) {
     struct ifaddrs *ifaddr, *ifa;
     char ip[INET6_ADDRSTRLEN];
