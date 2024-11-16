@@ -16,7 +16,7 @@ Display::Display() {
 void Display::displayConnections(const vector<ConnectionManager::SavedConnection>& connections) {
     clear();
     mvprintw(0, 0, "ISA-TOP");
-    mvprintw(1, 0, "%-45s %-45s %-9s %-10s %-10s %-8s %-8s", 
+    mvprintw(1, 0, "%-45s | %-45s | %-9s | %-10s | %-10s | %-8s | %-8s", 
              "Src IP:Port", "Dst IP:Port", "Protocol", "Rx Rate", "Tx Rate", "Rx P/s", "Tx P/s");
 
     int row = 2; // Start at row 3
@@ -33,7 +33,7 @@ void Display::displayConnections(const vector<ConnectionManager::SavedConnection
         string txPacketRate = conn.bw.formatPacketRate(sc.tx_pps);
 
         // Fixed width columns for proper alignment
-        mvprintw(row, 0, "%-45s %-45s %-9s %-10s %-10s %-8s %-8s",
+        mvprintw(row, 0, "%-45s | %-45s | %-9s | %-10s | %-10s | %-8s | %-8s",
                  (conn.sourceIp + ":" + to_string(conn.sourcePort)).c_str(),
                  (conn.destIp + ":" + to_string(conn.destPort)).c_str(),
                  conn.protocol.c_str(),
