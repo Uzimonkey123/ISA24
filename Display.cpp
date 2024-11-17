@@ -1,3 +1,10 @@
+/**
+ * @file Display.cpp
+ * @brief Implementation of the Display class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "Display.hpp"
 #include <ncurses.h>
 
@@ -42,6 +49,8 @@ void Display::displayConnections(const vector<ConnectionManager::SavedConnection
 
         row++;
     }
+
+    mvprintw(row, 0, "Press 'CTRL + C' to quit");
 
     refresh();
 }
