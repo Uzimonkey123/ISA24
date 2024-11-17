@@ -1,3 +1,10 @@
+/**
+ * @file ConnectionManager.cpp
+ * @brief Implementation of the ConnectionManager class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "ConnectionManager.hpp"
 #include "KeyGenerator.hpp"
 

@@ -1,3 +1,10 @@
+/**
+ * @file Packet.hpp
+ * @brief Declaration of the Packet class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef PACKET_HPP
 #define PACKET_HPP
 

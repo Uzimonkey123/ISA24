@@ -1,3 +1,10 @@
+/**
+ * @file KeyGenerator.cpp
+ * @brief Implementation of the KeyGenerator class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "KeyGenerator.hpp"
 #include <algorithm>
 

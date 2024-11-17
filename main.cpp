@@ -1,3 +1,10 @@
+/**
+ * @file main.cpp
+ * @brief Main file for the ISA-TOP program
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "parser.hpp"
 #include "Exception.hpp"
 #include "Packet.hpp"

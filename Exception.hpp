@@ -1,3 +1,10 @@
+/**
+ * @file Exception.hpp
+ * @brief Declaration of the Exception class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef EXCEPTION_HPP
 #define EXCEPTION_HPP
 

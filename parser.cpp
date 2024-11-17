@@ -1,3 +1,10 @@
+/**
+ * @file parser.cpp
+ * @brief Implementation of the Parser class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "parser.hpp"
 #include "Exception.hpp"
 
@@ -23,8 +30,10 @@ void Parser::parse(int argc, char* argv[]) {
                 case 'i':
                     if (i + 1 < argc && argv[i + 1][0] != '-') {
                         interface = argv[++i];
+
                     } else {
                         throw Exception(1, "Invalid argument for -i");
+
                     }
                     break;
 
@@ -66,6 +75,7 @@ void Parser::parse(int argc, char* argv[]) {
                 default:
                     throw Exception(1, "Invalid argument");
             }
+            
         } else {
             throw Exception(1, "Invalid argument format");
         }

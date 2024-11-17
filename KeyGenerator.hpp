@@ -1,3 +1,10 @@
+/**
+ * @file KeyGenerator.hpp
+ * @brief Declaration of the KeyGenerator class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef KEYGENERATOR_HPP
 #define KEYGENERATOR_HPP
 

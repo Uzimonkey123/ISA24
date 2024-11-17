@@ -1,3 +1,10 @@
+/**
+ * @file Exception.cpp
+ * @brief Implementation of the Exception class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "Exception.hpp"
 #include <sstream>
 

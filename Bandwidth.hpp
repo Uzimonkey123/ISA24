@@ -1,3 +1,10 @@
+/**
+ * @file Bandwidth.hpp
+ * @brief Header file for the Bandwidth class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef BANDWIDTH_HPP
 #define BANDWIDTH_HPP
 

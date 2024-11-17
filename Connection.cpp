@@ -1,3 +1,10 @@
+/**
+ * @file Connection.cpp
+ * @brief Implementation of the Connection class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "Connection.hpp"
 #include "Exception.hpp"
 

@@ -1,3 +1,10 @@
+/**
+ * @file Display.hpp
+ * @brief Declaration of the Display class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef DISPLAY_HPP
 #define DISPLAY_HPP
 

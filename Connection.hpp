@@ -1,3 +1,10 @@
+/**
+ * @file Connection.hpp
+ * @brief Header file for the Connection class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 

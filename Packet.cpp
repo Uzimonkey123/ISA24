@@ -1,3 +1,10 @@
+/**
+ * @file Packet.cpp
+ * @brief Implementation of the Packet class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "Packet.hpp"
 #include "ConnectionManager.hpp"
 

@@ -1,3 +1,10 @@
+/**
+ * @file parser.hpp
+ * @brief Declaration of the Parser class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef PARSER_HPP
 #define PARSER_HPP
 

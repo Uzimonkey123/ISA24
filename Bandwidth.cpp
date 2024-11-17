@@ -1,3 +1,10 @@
+/**
+ * @file Bandwidth.cpp
+ * @brief Implementation of the Bandwidth class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #include "Bandwidth.hpp"
 
 double Bandwidth::calculateRate(uint64_t current, uint64_t previous, double elapsedTime) {

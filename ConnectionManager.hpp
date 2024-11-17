@@ -1,3 +1,10 @@
+/**
+ * @file ConnectionManager.hpp
+ * @brief Definition of the ConnectionManager class
+ * @author Norman Babiak
+ * login: xbabia01
+ */
+
 #ifndef CONNECTION_MANAGER_HPP
 #define CONNECTION_MANAGER_HPP
 
