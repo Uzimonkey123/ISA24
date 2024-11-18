@@ -11,39 +11,46 @@
 #include "ConnectionManager.hpp"
 #include "Display.hpp"
 
+// Libraries for packet capture
 #include <pcap.h>
 #include <iostream>
-#include <thread>
-#include <mutex>
-#include <signal.h>
+#include <signal.h> // Signal handling
 #include <unistd.h>
+
+// Libraries for thread synchronization
+#include <atomic>
+#include <mutex>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
+// Global variables
 pcap_t* globalPcapHandle = nullptr;
-Display* displayPtr = nullptr;
-ConnectionManager* connManagerPtr = nullptr;
-int interval = 1;
-bool sort_by_bytes = true;
+Display* displayPtr = nullptr; // To pass into the signal handler
+ConnectionManager* connManagerPtr = nullptr; // To pass into the packet capture thread
+int interval = 1; // To pass into the signal handler
+bool sort_by_bytes = true; // To pass into the signal handler
+atomic<bool> threadStop(false);
+mutex globalMutex;
 
 // Signal handler to cleanly exit on Ctrl+C
 void signalHandler(int signum) {
-    (void) signum;
+    (void)signum;
 
-    if (globalPcapHandle != nullptr) { // Close the pcap handle
-        pcap_breakloop(globalPcapHandle);
-        pcap_close(globalPcapHandle);
-        globalPcapHandle = nullptr;
+    threadStop.store(true); // Signal the main thread to stop
+    {
+        lock_guard<mutex> lock(globalMutex);
+
+        if (globalPcapHandle != nullptr) { // Stop the packet capture
+            pcap_breakloop(globalPcapHandle);
+        }
     }
-
-    endwin();
-
-    exit(0);
 }
 
 // Display refresh function called periodically by alarm
 void refreshDisplay(int signum) {
-    (void) signum;
+    (void)signum;
 
     if (displayPtr != nullptr && connManagerPtr != nullptr) {
         auto activeConnections = connManagerPtr->getActiveConnections(sort_by_bytes);
@@ -57,28 +64,36 @@ void packetCapture(ConnectionManager* connManager, const string& interface) {
     char errbuf[PCAP_ERRBUF_SIZE];
     struct bpf_program filter;
 
-    // Open the device for capturing
-    globalPcapHandle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
-    if (globalPcapHandle == nullptr) {
-        throw Exception(2, "pcap_open_live() failed: " + string(errbuf));
-    }
+    { // Lock the global variables
+        lock_guard<mutex> lock(globalMutex);
 
-    if (pcap_compile(globalPcapHandle, &filter, "ip or ip6", 0, PCAP_NETMASK_UNKNOWN) == -1) {
-        throw Exception(2, "pcap_compile() failed: " + string(pcap_geterr(globalPcapHandle)));
-    }
+        // Open the device for capturing
+        globalPcapHandle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
+        if (globalPcapHandle == nullptr) {
+            throw Exception(2, "pcap_open_live() failed: " + string(errbuf));
+        }
 
-    // Set the compiled filter
-    if (pcap_setfilter(globalPcapHandle, &filter) == -1) {
-        throw Exception(2, "pcap_setfilter() failed: " + string(pcap_geterr(globalPcapHandle)));
+        if (pcap_compile(globalPcapHandle, &filter, "ip or ip6", 0, PCAP_NETMASK_UNKNOWN) == -1) {
+            throw Exception(2, "pcap_compile() failed: " + string(pcap_geterr(globalPcapHandle)));
+        }
+
+        // Set the compiled filter
+        if (pcap_setfilter(globalPcapHandle, &filter) == -1) {
+            throw Exception(2, "pcap_setfilter() failed: " + string(pcap_geterr(globalPcapHandle)));
+        }
     }
 
     // Start capturing packets
     pcap_loop(globalPcapHandle, 0, Packet::handlePacket, reinterpret_cast<u_char*>(connManager));
 
-    // Close the capture handle after capturing
-    if (globalPcapHandle != nullptr) {
-        pcap_close(globalPcapHandle);
-        globalPcapHandle = nullptr;
+    {
+        lock_guard<mutex> lock(globalMutex);
+
+        // Close the capture handle after capturing
+        if (globalPcapHandle != nullptr) { 
+            pcap_close(globalPcapHandle);
+            globalPcapHandle = nullptr;
+        }
     }
 }
 
@@ -87,7 +102,7 @@ int main(int argc, char* argv[]) {
 
     try {
         ArgParse.parse(argc, argv);
-    } catch (Exception &e) {
+    } catch (Exception& e) {
         cerr << e.what() << endl;
         return e.getCode();
     }
@@ -98,19 +113,31 @@ int main(int argc, char* argv[]) {
 
     ConnectionManager connManager;
     connManagerPtr = &connManager;
-    
+
     Display display;
     displayPtr = &display;
 
-    signal(SIGINT, signalHandler);   // Handle Ctrl+C for graceful exit
-    signal(SIGALRM, refreshDisplay); // Handle screen refresh
-
+    signal(SIGINT, signalHandler);   // Handle Ctrl+C
+    signal(SIGALRM, refreshDisplay); // Refresh the display periodically
+    
     // Alarm for first refresh of the screen
     alarm(interval);
 
     // Start packet capture in a separate thread
     thread captureThread(packetCapture, &connManager, ArgParse.getInterface());
-    captureThread.join();
+
+    // Part to avoid the main thread from exiting while the capture thread is running (valgrind errors)
+    while (!threadStop.load()) {
+        this_thread::sleep_for(chrono::milliseconds(100)); // Sleep to reduce CPU usage
+    }
+
+    // Wait for the capture thread to finish
+    if (captureThread.joinable()) {
+        captureThread.join();
+    }
+
+    // Cleanup ncurses display
+    endwin();
 
     return 0;
 }

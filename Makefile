@@ -16,5 +16,8 @@ $(TARGET): $(OBJS)
 %.o: %.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+pack:
+	tar -cf xbabia01.tar $(SRCS) $(HEADERS) Makefile isa-top.1 manual.pdf ./tests
+
 clean:
 	$(RM) $(TARGET) $(OBJS)
